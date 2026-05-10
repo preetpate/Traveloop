@@ -39,33 +39,33 @@ export default function DashboardPage() {
       icon: Plane, 
       label: 'Total Trips', 
       value: stats.totalTrips, 
-      gradient: 'from-blue-500 via-blue-600 to-indigo-600',
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-600'
+      gradient: 'from-emerald-500 via-teal-500 to-cyan-500',
+      iconBg: 'bg-emerald-100',
+      iconColor: 'text-emerald-600'
     },
     { 
       icon: Calendar, 
       label: 'Upcoming', 
       value: stats.upcomingTrips, 
-      gradient: 'from-purple-500 via-purple-600 to-pink-600',
-      iconBg: 'bg-purple-100',
-      iconColor: 'text-purple-600'
+      gradient: 'from-violet-500 via-purple-500 to-fuchsia-500',
+      iconBg: 'bg-violet-100',
+      iconColor: 'text-violet-600'
     },
     { 
       icon: MapPin, 
       label: 'Countries', 
       value: stats.totalCountries, 
-      gradient: 'from-green-500 via-emerald-600 to-teal-600',
-      iconBg: 'bg-green-100',
-      iconColor: 'text-green-600'
+      gradient: 'from-amber-500 via-orange-500 to-red-500',
+      iconBg: 'bg-amber-100',
+      iconColor: 'text-amber-600'
     },
     { 
       icon: TrendingUp, 
       label: 'Activities', 
       value: stats.totalActivities, 
-      gradient: 'from-orange-500 via-amber-600 to-yellow-600',
-      iconBg: 'bg-orange-100',
-      iconColor: 'text-orange-600'
+      gradient: 'from-sky-500 via-blue-500 to-indigo-500',
+      iconBg: 'bg-sky-100',
+      iconColor: 'text-sky-600'
     },
   ];
 
@@ -88,24 +88,24 @@ export default function DashboardPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 p-10 md:p-14 shadow-2xl"
+        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 p-10 md:p-14 shadow-2xl"
       >
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-pink-500/10 rounded-full blur-2xl"></div>
+          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-pink-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-purple-400/10 rounded-full blur-2xl"></div>
         </div>
 
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="w-6 h-6 text-yellow-300" />
+            <Sparkles className="w-6 h-6 text-yellow-300 animate-pulse" />
             <span className="text-white/90 font-medium">Welcome to Traveloop</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 leading-tight">
             Plan Your Next
             <br />
-            <span className="bg-gradient-to-r from-yellow-200 to-pink-200 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-yellow-200 via-pink-200 to-purple-200 bg-clip-text text-transparent">
               Dream Adventure
             </span>
           </h1>
@@ -115,7 +115,7 @@ export default function DashboardPage() {
           <div className="flex flex-wrap gap-4">
             <Link
               to="/create-trip"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-600 rounded-2xl font-bold hover:scale-105 transition-all shadow-2xl hover:shadow-white/20"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-indigo-600 rounded-2xl font-bold hover:scale-105 transition-all shadow-2xl hover:shadow-white/20"
             >
               <Plus className="w-5 h-5" />
               Create New Trip
