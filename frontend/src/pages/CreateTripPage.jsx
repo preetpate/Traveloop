@@ -1,234 +1,200 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Image, FileText, ArrowLeft, Plus } from 'lucide-react';
+import { Calendar, Image, FileText, ArrowLeft, Plus, Plane } from 'lucide-react';
+import { motion } from 'framer-motion';
 import api from '../services/api';
+
+const inputCls = (err) =>
+  `w-full px-4 py-3.5 bg-white/5 border ${err ? 'border-red-500/50' : 'border-white/10'} rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`;
 
 export default function CreateTripPage() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    startDate: '',
-    endDate: '',
-    coverImage: '',
-  });
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({ title: '', description: '', startDate: '', endDate: '', coverImage: '' });
+  const [errors, setErrors]     = useState({});
+  const [loading, setLoading]   = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
-    }
+    setFormData(p => ({ ...p, [name]: value }));
+    if (errors[name]) setErrors(p => ({ ...p, [name]: '' }));
   };
 
   const validate = () => {
-    const newErrors = {};
-    if (!formData.title.trim()) newErrors.title = 'Trip title is required';
-    if (!formData.startDate) newErrors.startDate = 'Start date is required';
-    if (!formData.endDate) newErrors.endDate = 'End date is required';
-    if (formData.startDate && formData.endDate) {
-      const start = new Date(formData.startDate);
-      const end = new Date(formData.endDate);
-      if (start > end) newErrors.endDate = 'End date must be after start date';
-    }
-    return newErrors;
+    const e = {};
+    if (!formData.title.trim()) e.title = 'Trip title is required';
+    if (!formData.startDate)    e.startDate = 'Start date is required';
+    if (!formData.endDate)      e.endDate = 'End date is required';
+    if (formData.startDate && formData.endDate && new Date(formData.startDate) > new Date(formData.endDate))
+      e.endDate = 'End date must be after start date';
+    return e;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newErrors = validate();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-    setIsLoading(true);
+    const errs = validate();
+    if (Object.keys(errs).length) { setErrors(errs); return; }
+    setLoading(true);
     try {
       const res = await api.post('/api/trips', formData);
-      const tripId = res.data.data._id;
-      navigate(`/trip/${tripId}`);
+      navigate(`/trip/${res.data.data._id}`);
     } catch (err) {
       setErrors({ submit: err.response?.data?.message || 'Failed to create trip' });
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header */}
-      <div>
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-text-secondary hover:text-text-primary transition mb-4"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          Back
-        </button>
-        <h1 className="text-4xl font-bold text-text-primary mb-2">Create New Trip</h1>
-        <p className="text-text-secondary text-lg">Start planning your next adventure</p>
-      </div>
+    <div className="max-w-2xl mx-auto pb-12">
+      {/* Back */}
+      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-white/50 hover:text-white transition mb-6 mt-2">
+        <ArrowLeft className="w-4 h-4" /> Back
+      </button>
 
-      {/* Form Card */}
-      <div className="bg-white border border-gray-100 rounded-3xl p-8 shadow-soft">
-        {errors.submit && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
-            {errors.submit}
+      {/* Header */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+            <Plane className="w-5 h-5 text-white" />
           </div>
+          <div>
+            <h1 className="text-3xl font-extrabold text-white">Create New Trip</h1>
+            <p className="text-white/40 text-sm">Start planning your next adventure</p>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Form */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8"
+      >
+        {errors.submit && (
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">{errors.submit}</div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Trip Title */}
+          {/* Title */}
           <div>
-            <label htmlFor="title" className="block text-sm font-semibold text-text-primary mb-2">
-              Trip Title <span className="text-danger">*</span>
+            <label className="block text-sm font-semibold text-white/70 mb-2">
+              Trip Title <span className="text-red-400">*</span>
             </label>
             <input
-              id="title"
               name="title"
               type="text"
               value={formData.title}
               onChange={handleChange}
               placeholder="e.g., Summer Europe Adventure"
-              className={`w-full px-4 py-3.5 bg-gray-50 border ${
-                errors.title ? 'border-red-400' : 'border-gray-200'
-              } rounded-xl text-text-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary transition`}
+              className={inputCls(errors.title)}
             />
-            {errors.title && <p className="mt-1.5 text-sm text-red-600">{errors.title}</p>}
+            {errors.title && <p className="mt-1.5 text-xs text-red-400">{errors.title}</p>}
           </div>
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-sm font-semibold text-text-primary mb-2">
-              Description
-            </label>
+            <label className="block text-sm font-semibold text-white/70 mb-2">Description</label>
             <div className="relative">
-              <FileText className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+              <FileText className="absolute left-4 top-3.5 text-white/30 w-5 h-5" />
               <textarea
-                id="description"
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
                 placeholder="Tell us about your trip plans..."
-                rows={4}
-                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-text-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary transition resize-none"
+                rows={3}
+                className={`${inputCls(false)} pl-12 resize-none`}
               />
             </div>
           </div>
 
           {/* Dates */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label htmlFor="startDate" className="block text-sm font-semibold text-text-primary mb-2">
-                Start Date <span className="text-danger">*</span>
+              <label className="block text-sm font-semibold text-white/70 mb-2">
+                Start Date <span className="text-red-400">*</span>
               </label>
               <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 w-5 h-5" />
                 <input
-                  id="startDate"
                   name="startDate"
                   type="date"
                   value={formData.startDate}
                   onChange={handleChange}
-                  className={`w-full pl-10 pr-4 py-3.5 bg-gray-50 border ${
-                    errors.startDate ? 'border-red-400' : 'border-gray-200'
-                  } rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-primary transition`}
+                  className={`${inputCls(errors.startDate)} pl-12`}
                 />
               </div>
-              {errors.startDate && <p className="mt-1.5 text-sm text-red-600">{errors.startDate}</p>}
+              {errors.startDate && <p className="mt-1.5 text-xs text-red-400">{errors.startDate}</p>}
             </div>
-
             <div>
-              <label htmlFor="endDate" className="block text-sm font-semibold text-text-primary mb-2">
-                End Date <span className="text-danger">*</span>
+              <label className="block text-sm font-semibold text-white/70 mb-2">
+                End Date <span className="text-red-400">*</span>
               </label>
               <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 w-5 h-5" />
                 <input
-                  id="endDate"
                   name="endDate"
                   type="date"
                   value={formData.endDate}
                   onChange={handleChange}
                   min={formData.startDate}
-                  className={`w-full pl-10 pr-4 py-3.5 bg-gray-50 border ${
-                    errors.endDate ? 'border-red-400' : 'border-gray-200'
-                  } rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-primary transition`}
+                  className={`${inputCls(errors.endDate)} pl-12`}
                 />
               </div>
-              {errors.endDate && <p className="mt-1.5 text-sm text-red-600">{errors.endDate}</p>}
+              {errors.endDate && <p className="mt-1.5 text-xs text-red-400">{errors.endDate}</p>}
             </div>
           </div>
 
           {/* Cover Image */}
           <div>
-            <label htmlFor="coverImage" className="block text-sm font-semibold text-text-primary mb-2">
-              Cover Image URL
-            </label>
+            <label className="block text-sm font-semibold text-white/70 mb-2">Cover Image URL</label>
             <div className="relative">
-              <Image className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Image className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 w-5 h-5" />
               <input
-                id="coverImage"
                 name="coverImage"
                 type="url"
                 value={formData.coverImage}
                 onChange={handleChange}
                 placeholder="https://example.com/image.jpg"
-                className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-text-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary transition"
+                className={`${inputCls(false)} pl-12`}
               />
             </div>
-            <p className="mt-1.5 text-xs text-text-secondary">
-              Optional: Add a cover image URL for your trip
-            </p>
+            <p className="mt-1.5 text-xs text-white/30">Optional: Add a cover image URL</p>
           </div>
 
           {/* Preview */}
           {formData.coverImage && (
             <div>
-              <p className="text-sm font-semibold text-text-primary mb-2">Preview</p>
-              <div className="relative h-48 rounded-xl overflow-hidden border border-gray-200">
-                <img
-                  src={formData.coverImage}
-                  alt="Cover preview"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                  }}
-                />
+              <p className="text-sm font-semibold text-white/70 mb-2">Preview</p>
+              <div className="h-40 rounded-xl overflow-hidden border border-white/10">
+                <img src={formData.coverImage} alt="Cover" className="w-full h-full object-cover" onError={e => { e.target.style.display = 'none'; }} />
               </div>
             </div>
           )}
 
           {/* Actions */}
-          <div className="flex items-center gap-4 pt-4">
+          <div className="flex gap-4 pt-2">
             <button
               type="submit"
-              disabled={isLoading}
-              className="flex-1 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold hover:from-blue-700 hover:to-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg flex items-center justify-center gap-2"
+              disabled={loading}
+              className="flex-1 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold hover:scale-[1.02] transition-all disabled:opacity-50 shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2"
             >
-              {isLoading ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  Creating...
-                </>
+              {loading ? (
+                <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Creating...</>
               ) : (
-                <>
-                  <Plus className="w-5 h-5" />
-                  Create Trip
-                </>
+                <><Plus className="w-5 h-5" /> Create Trip</>
               )}
             </button>
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="px-8 py-4 bg-gray-100 border border-gray-200 rounded-xl text-text-primary font-semibold hover:bg-gray-200 transition"
+              className="px-6 py-4 bg-white/5 border border-white/10 rounded-xl text-white font-semibold hover:bg-white/10 transition"
             >
               Cancel
             </button>
           </div>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }

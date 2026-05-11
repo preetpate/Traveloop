@@ -1,216 +1,189 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Plane, Map, Wallet, Globe } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [showPwd, setShowPwd]   = useState(false);
+  const [error, setError]       = useState('');
+  const [loading, setLoading]   = useState(false);
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
-    if (!email || !password) {
-      setError('Please fill in all fields');
-      return;
-    }
-
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      setError('Please enter a valid email address');
-      return;
-    }
-
-    setIsLoading(true);
+    if (!email || !password) { setError('Please fill in all fields'); return; }
+    if (!/\S+@\S+\.\S+/.test(email)) { setError('Enter a valid email'); return; }
+    setLoading(true);
     try {
       await login(email, password);
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid email or password');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-        {/* Left Side - Branding */}
-        <div className="hidden lg:block">
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-5xl font-bold text-gray-900 mb-4">
-                Welcome to
-                <span className="block bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Traveloop
-                </span>
-              </h1>
-              <p className="text-xl text-gray-600">
-                Your ultimate travel planning companion. Plan, organize, and explore your dream destinations.
-              </p>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
-                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Smart Itineraries</h3>
-                  <p className="text-gray-600">Create detailed travel plans with ease</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0">
-                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Budget Tracking</h3>
-                  <p className="text-gray-600">Manage expenses and stay on budget</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
-                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Discover Places</h3>
-                  <p className="text-gray-600">Explore amazing destinations worldwide</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+  const inputCls = "w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all";
 
-        {/* Right Side - Login Form */}
-        <div className="w-full">
-          <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10 border border-gray-100">
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign In</h2>
-              <p className="text-gray-600">Enter your credentials to access your account</p>
+  return (
+    <div className="min-h-screen bg-[#0B1020] flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background blobs */}
+      <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-center relative z-10">
+
+        {/* ── LEFT BRANDING ── */}
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="hidden lg:block"
+        >
+          <Link to="/" className="flex items-center gap-3 mb-10">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <Plane className="w-5 h-5 text-white" />
             </div>
+            <span className="text-2xl font-extrabold text-white">Traveloop</span>
+          </Link>
+
+          <h1 className="text-5xl font-extrabold text-white leading-tight mb-4">
+            Welcome back,
+            <span className="block bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              Explorer!
+            </span>
+          </h1>
+          <p className="text-white/50 text-lg mb-10">
+            Your travel plans are waiting. Sign in to continue your journey.
+          </p>
+
+          <div className="space-y-4">
+            {[
+              { icon: Map,    title: 'Smart Itineraries',  desc: 'Day-by-day trip planning' },
+              { icon: Wallet, title: 'Budget Tracking',    desc: 'Real-time expense monitoring' },
+              { icon: Globe,  title: 'Discover Places',    desc: 'Explore amazing destinations' },
+            ].map((f, i) => (
+              <div key={i} className="flex items-center gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                  <f.icon className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <p className="font-semibold text-white text-sm">{f.title}</p>
+                  <p className="text-white/40 text-xs">{f.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* ── RIGHT FORM ── */}
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+        >
+          {/* Mobile logo */}
+          <Link to="/" className="flex items-center gap-2 mb-8 lg:hidden">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <Plane className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-xl font-extrabold text-white">Traveloop</span>
+          </Link>
+
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8">
+            <h2 className="text-3xl font-extrabold text-white mb-1">Sign In</h2>
+            <p className="text-white/40 mb-8">Enter your credentials to continue</p>
 
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+              <div className="mb-5 p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">
                 {error}
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Email */}
               <div>
-                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Email Address
-                </label>
+                <label className="block text-sm font-semibold text-white/70 mb-2">Email Address</label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 w-5 h-5" />
                   <input
-                    id="email"
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={e => setEmail(e.target.value)}
                     placeholder="you@example.com"
-                    className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    className={`${inputCls} pl-12`}
                   />
                 </div>
               </div>
 
-              {/* Password */}
               <div>
-                <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Password
-                </label>
+                <label className="block text-sm font-semibold text-white/70 mb-2">Password</label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 w-5 h-5" />
                   <input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPwd ? 'text' : 'password'}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={e => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full pl-12 pr-12 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    className={`${inputCls} pl-12 pr-12`}
                   />
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+                    onClick={() => setShowPwd(!showPwd)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70 transition"
                   >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showPwd ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
               </div>
 
-              {/* Forgot Password */}
               <div className="flex items-center justify-between">
-                <label className="flex items-center">
-                  <input type="checkbox" className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
-                  <span className="ml-2 text-sm text-gray-600">Remember me</span>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" className="w-4 h-4 rounded border-white/20 bg-white/5" />
+                  <span className="text-sm text-white/50">Remember me</span>
                 </label>
-                <Link
-                  to="/forgot-password"
-                  className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition"
-                >
+                <Link to="/forgot-password" className="text-sm text-blue-400 hover:text-blue-300 font-semibold transition">
                   Forgot password?
                 </Link>
               </div>
 
-              {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isLoading}
-                className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold text-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                disabled={loading}
+                className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold text-base hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2"
               >
-                {isLoading ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Signing in...
-                  </>
+                {loading ? (
+                  <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Signing in...</>
                 ) : (
-                  <>
-                    Sign In
-                    <ArrowRight className="w-5 h-5" />
-                  </>
+                  <>Sign In <ArrowRight className="w-5 h-5" /></>
                 )}
               </button>
             </form>
 
-            {/* Divider */}
-            <div className="relative my-8">
+            <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200"></div>
+                <div className="w-full border-t border-white/10" />
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-gray-500">Don't have an account?</span>
+              <div className="relative flex justify-center">
+                <span className="px-4 bg-transparent text-white/30 text-sm">Don't have an account?</span>
               </div>
             </div>
 
-            {/* Sign Up Link */}
             <Link
               to="/signup"
-              className="block w-full py-3.5 bg-gray-100 text-gray-900 rounded-xl font-semibold text-center hover:bg-gray-200 transition"
+              className="block w-full py-3.5 bg-white/5 border border-white/10 text-white rounded-xl font-semibold text-center hover:bg-white/10 transition"
             >
               Create Account
             </Link>
 
-            {/* Back to Home */}
-            <div className="text-center mt-6">
-              <Link to="/" className="text-sm text-gray-600 hover:text-gray-900 transition font-medium">
+            <div className="text-center mt-5">
+              <Link to="/" className="text-sm text-white/30 hover:text-white/60 transition">
                 ← Back to Home
               </Link>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
