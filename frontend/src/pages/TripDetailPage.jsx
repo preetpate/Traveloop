@@ -158,9 +158,9 @@ export default function TripDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6 animate-pulse">
-        <div className="h-96 bg-gray-200 rounded-3xl"></div>
-        <div className="h-64 bg-white rounded-3xl"></div>
+      <div className="space-y-4 animate-pulse">
+        <div className="h-64 bg-card/50 rounded-3xl border border-border"></div>
+        <div className="h-48 bg-card/50 rounded-3xl border border-border"></div>
       </div>
     );
   }
@@ -169,9 +169,7 @@ export default function TripDetailPage() {
     return (
       <div className="text-center py-20">
         <h2 className="text-2xl font-bold text-text-primary mb-4">Trip not found</h2>
-        <Link to="/my-trips" className="text-primary hover:underline">
-          Back to My Trips
-        </Link>
+        <Link to="/my-trips" className="text-primary hover:underline">Back to My Trips</Link>
       </div>
     );
   }
@@ -179,122 +177,82 @@ export default function TripDetailPage() {
   const tripDuration = Math.ceil(
     (new Date(trip.endDate) - new Date(trip.startDate)) / (1000 * 60 * 60 * 24)
   );
-
   const isUpcoming = new Date(trip.startDate) > new Date();
 
-  return (
-    <div className="space-y-6 pb-8">
-      {/* Header with Cover Image */}
-      <div className="relative h-96 rounded-3xl overflow-hidden bg-gradient-to-br from-blue-100 to-purple-100">
-        {trip.coverImage ? (
-          <img
-            src={trip.coverImage}
-            alt={trip.title}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              e.target.style.display = 'none';
-            }}
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <MapPin className="w-32 h-32 text-blue-400" />
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-        
-        {/* Content Overlay */}
-        <div className="absolute inset-0 flex flex-col justify-between p-8">
-          {/* Top Bar */}
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => navigate('/my-trips')}
-              className="flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-md text-white rounded-xl hover:bg-white/30 transition"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              Back
-            </button>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={handleCopyLink}
-                className="flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-md text-white rounded-xl hover:bg-white/30 transition"
-                title="Copy public link"
-              >
-                <Share2 className="w-5 h-5" />
-                <span className="hidden sm:inline">Share</span>
-              </button>
-              <button
-                onClick={() => navigate(`/trip/${id}/edit`)}
-                className="p-3 bg-white/20 backdrop-blur-md text-white rounded-xl hover:bg-white/30 transition"
-                title="Edit trip"
-              >
-                <Edit className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => setDeleteDialog({ isOpen: true })}
-                className="p-3 bg-red-500/80 backdrop-blur-md text-white rounded-xl hover:bg-red-600/80 transition"
-                title="Delete trip"
-              >
-                <Trash2 className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
+  // Fallback images for when coverImage is missing
+  const fallbackImages = [
+    'https://images.unsplash.com/photo-1488085061387-422e29b40080?w=800&q=80',
+    'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80',
+    'https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=800&q=80',
+  ];
+  const heroImage = trip.coverImage || fallbackImages[0];
 
-          {/* Trip Info */}
-          <div>
-            <div className="mb-4">
-              <span className={`px-4 py-2 rounded-full text-sm font-bold backdrop-blur-md ${
-                isUpcoming ? 'bg-green-500/90 text-white' : 'bg-gray-800/90 text-white'
-              }`}>
-                {isUpcoming ? '✈️ Upcoming Trip' : '📍 Past Trip'}
-              </span>
+  return (
+    <div className="space-y-4 pb-8 w-full overflow-x-hidden">
+      {/* ── HERO ── */}
+      <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden" style={{ height: '280px' }}>
+        <img
+          src={heroImage}
+          alt={trip.title}
+          className="w-full h-full object-cover"
+          onError={e => { e.currentTarget.src = fallbackImages[0]; }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
+
+        {/* Top bar */}
+        <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4">
+          <button
+            onClick={() => navigate('/my-trips')}
+            className="flex items-center gap-1.5 px-3 py-2 bg-black/40 backdrop-blur-md text-white rounded-xl text-sm font-medium hover:bg-black/60 transition"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={handleCopyLink} className="p-2 bg-black/40 backdrop-blur-md text-white rounded-xl hover:bg-black/60 transition" title="Share">
+              <Share2 className="w-4 h-4" />
+            </button>
+            <button onClick={() => setDeleteDialog({ isOpen: true })} className="p-2 bg-red-500/80 backdrop-blur-md text-white rounded-xl hover:bg-red-600 transition" title="Delete">
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Bottom info */}
+        <div className="absolute bottom-0 left-0 right-0 p-4">
+          <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 ${isUpcoming ? 'bg-emerald-500/90' : 'bg-gray-700/90'} text-white`}>
+            {isUpcoming ? '✈️ Upcoming Trip' : '📍 Past Trip'}
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight mb-2">{trip.title}</h1>
+          <div className="flex flex-wrap gap-3 text-white/80 text-xs">
+            <div className="flex items-center gap-1">
+              <Calendar className="w-3.5 h-3.5" />
+              <span>{new Date(trip.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} – {new Date(trip.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
             </div>
-            <h1 className="text-5xl font-bold text-white mb-4">{trip.title}</h1>
-            {trip.description && (
-              <p className="text-xl text-white/90 mb-6 max-w-3xl">{trip.description}</p>
+            <div className="flex items-center gap-1">
+              <Clock className="w-3.5 h-3.5" />
+              <span>{tripDuration} days</span>
+            </div>
+            {trip.stops?.length > 0 && (
+              <div className="flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5" />
+                <span>{trip.stops.length} stops</span>
+              </div>
             )}
-            <div className="flex flex-wrap items-center gap-6 text-white">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
-                <span className="font-semibold">
-                  {new Date(trip.startDate).toLocaleDateString('en-US', {
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric'
-                  })}
-                  {' - '}
-                  {new Date(trip.endDate).toLocaleDateString('en-US', {
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric'
-                  })}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="w-5 h-5" />
-                <span className="font-semibold">{tripDuration} days</span>
-              </div>
-              {trip.stops && trip.stops.length > 0 && (
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-5 h-5" />
-                  <span className="font-semibold">{trip.stops.length} destinations</span>
-                </div>
-              )}
-            </div>
           </div>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="bg-white rounded-2xl p-2 shadow-soft border border-gray-100">
-        <div className="flex gap-2">
-          {['overview', 'itinerary', 'budget', 'packing', 'notes'].map((tab) => (
+      {/* ── TABS ── */}
+      <div className="bg-card/50 backdrop-blur-md border border-border rounded-2xl p-1.5 overflow-x-auto">
+        <div className="flex gap-1 min-w-max sm:min-w-0">
+          {['overview', 'itinerary', 'budget', 'packing', 'notes'].map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 px-6 py-3 rounded-xl font-semibold capitalize transition ${
+              className={`px-4 py-2.5 rounded-xl font-semibold capitalize text-sm transition whitespace-nowrap ${
                 activeTab === tab
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md'
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md'
+                  : 'text-text-secondary hover:text-text-primary hover:bg-white/5'
               }`}
             >
               {tab}
@@ -303,192 +261,122 @@ export default function TripDetailPage() {
         </div>
       </div>
 
-      {/* Tab Content */}
-      <div className="bg-white rounded-3xl p-8 shadow-soft border border-gray-100">
+      {/* ── TAB CONTENT ── */}
+      <div className="bg-card/50 backdrop-blur-md border border-border rounded-2xl p-5 sm:p-7">
         {activeTab === 'overview' && (
           <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-text-primary mb-4">Trip Overview</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="p-6 bg-blue-50 rounded-2xl">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
-                      <Calendar className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600 font-semibold">Duration</p>
-                      <p className="text-2xl font-bold text-gray-900">{tripDuration} days</p>
-                    </div>
-                  </div>
+            <h2 className="text-xl font-extrabold text-text-primary">Trip Overview</h2>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { icon: Calendar, label: 'Duration',     value: `${tripDuration}d`, color: 'text-blue-400',   bg: 'bg-blue-500/10' },
+                { icon: MapPin,   label: 'Stops',        value: trip.stops?.length || 0, color: 'text-purple-400', bg: 'bg-purple-500/10' },
+                { icon: CheckCircle, label: 'Status',   value: isUpcoming ? 'Soon' : 'Done', color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+              ].map((s, i) => (
+                <div key={i} className={`${s.bg} border border-white/5 rounded-2xl p-4 text-center`}>
+                  <s.icon className={`w-6 h-6 ${s.color} mx-auto mb-2`} />
+                  <p className="text-text-primary font-bold text-lg">{s.value}</p>
+                  <p className="text-text-secondary text-xs">{s.label}</p>
                 </div>
-                <div className="p-6 bg-purple-50 rounded-2xl">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
-                      <MapPin className="w-6 h-6 text-purple-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600 font-semibold">Destinations</p>
-                      <p className="text-2xl font-bold text-gray-900">{trip.stops?.length || 0}</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-6 bg-green-50 rounded-2xl">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
-                      <CheckCircle className="w-6 h-6 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600 font-semibold">Status</p>
-                      <p className="text-2xl font-bold text-gray-900">{isUpcoming ? 'Upcoming' : 'Completed'}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
 
             {trip.description && (
               <div>
-                <h3 className="text-xl font-bold text-text-primary mb-3">About This Trip</h3>
-                <p className="text-text-secondary leading-relaxed">{trip.description}</p>
+                <h3 className="text-base font-bold text-text-primary mb-2">About</h3>
+                <p className="text-text-secondary text-sm leading-relaxed">{trip.description}</p>
               </div>
             )}
 
             <div>
-              <h3 className="text-xl font-bold text-text-primary mb-4">Quick Actions</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <button
-                  onClick={() => setActiveTab('budget')}
-                  className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition text-left"
-                >
-                  <DollarSign className="w-8 h-8 text-green-600" />
-                  <div>
-                    <p className="font-semibold text-text-primary">Manage Budget</p>
-                    <p className="text-sm text-text-secondary">Track your expenses</p>
-                  </div>
-                </button>
-                <button
-                  onClick={() => setActiveTab('packing')}
-                  className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition text-left"
-                >
-                  <Package className="w-8 h-8 text-blue-600" />
-                  <div>
-                    <p className="font-semibold text-text-primary">Packing List</p>
-                    <p className="text-sm text-text-secondary">What to bring</p>
-                  </div>
-                </button>
-                <button
-                  onClick={() => setActiveTab('itinerary')}
-                  className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition text-left"
-                >
-                  <MapPin className="w-8 h-8 text-purple-600" />
-                  <div>
-                    <p className="font-semibold text-text-primary">Plan Itinerary</p>
-                    <p className="text-sm text-text-secondary">Add destinations</p>
-                  </div>
-                </button>
-                <button
-                  onClick={() => setActiveTab('notes')}
-                  className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition text-left"
-                >
-                  <StickyNote className="w-8 h-8 text-orange-600" />
-                  <div>
-                    <p className="font-semibold text-text-primary">Trip Notes</p>
-                    <p className="text-sm text-text-secondary">Important info</p>
-                  </div>
-                </button>
+              <h3 className="text-base font-bold text-text-primary mb-3">Quick Actions</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { icon: DollarSign, label: 'Budget',    sub: 'Track expenses',    tab: 'budget',    color: 'text-emerald-400' },
+                  { icon: Package,    label: 'Packing',   sub: 'What to bring',     tab: 'packing',   color: 'text-blue-400' },
+                  { icon: MapPin,     label: 'Itinerary', sub: 'Add destinations',  tab: 'itinerary', color: 'text-purple-400' },
+                  { icon: StickyNote, label: 'Notes',     sub: 'Important info',    tab: 'notes',     color: 'text-amber-400' },
+                ].map((a, i) => (
+                  <button key={i} onClick={() => setActiveTab(a.tab)}
+                    className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition text-left">
+                    <a.icon className={`w-6 h-6 ${a.color} flex-shrink-0`} />
+                    <div className="min-w-0">
+                      <p className="font-semibold text-text-primary text-sm">{a.label}</p>
+                      <p className="text-text-secondary text-xs truncate">{a.sub}</p>
+                    </div>
+                  </button>
+                ))}
               </div>
             </div>
           </div>
         )}
 
         {activeTab === 'itinerary' && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between mb-6">
+          <div className="space-y-5">
+            <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold text-text-primary">Trip Itinerary</h2>
-                <p className="text-text-secondary">Manage your destinations and activities</p>
+                <h2 className="text-xl font-extrabold text-text-primary">Itinerary</h2>
+                <p className="text-text-secondary text-sm">Manage destinations & activities</p>
               </div>
-              <Button
-                variant="primary"
-                onClick={() => setStopModal({ isOpen: true, stop: null, mode: 'add' })}
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Add Stop
+              <Button variant="primary" size="sm" onClick={() => setStopModal({ isOpen: true, stop: null, mode: 'add' })}>
+                <Plus className="w-4 h-4 mr-1" /> Add Stop
               </Button>
             </div>
 
             {!trip.stops || trip.stops.length === 0 ? (
-              <div className="text-center py-12">
-                <MapPin className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-text-primary mb-2">No Stops Yet</h3>
-                <p className="text-text-secondary mb-6">Start adding destinations to your trip</p>
-                <Button
-                  variant="primary"
-                  onClick={() => setStopModal({ isOpen: true, stop: null, mode: 'add' })}
-                >
-                  <Plus className="w-5 h-5 mr-2" />
-                  Add First Stop
+              <div className="text-center py-10">
+                <MapPin className="w-12 h-12 text-text-secondary mx-auto mb-3" />
+                <h3 className="font-bold text-text-primary mb-1">No Stops Yet</h3>
+                <p className="text-text-secondary text-sm mb-4">Add your first destination</p>
+                <Button variant="primary" size="sm" onClick={() => setStopModal({ isOpen: true, stop: null, mode: 'add' })}>
+                  <Plus className="w-4 h-4 mr-1" /> Add Stop
                 </Button>
               </div>
             ) : (
-              <div className="space-y-4">
-                {trip.stops
-                  .sort((a, b) => (a.order || 0) - (b.order || 0))
-                  .map((stop, index) => (
-                    <StopCard
-                      key={stop._id}
-                      stop={stop}
-                      index={index}
-                      onEdit={() => setStopModal({ isOpen: true, stop, mode: 'edit' })}
-                      onDelete={() => handleDeleteStop(stop._id)}
-                      onAddActivity={() => setActivityModal({ isOpen: true, stopId: stop._id, activity: null, mode: 'add' })}
-                      onEditActivity={(activity) => setActivityModal({ isOpen: true, stopId: stop._id, activity, mode: 'edit' })}
-                      onDeleteActivity={(activityId) => handleDeleteActivity(stop._id, activityId)}
-                    />
-                  ))}
+              <div className="space-y-3">
+                {trip.stops.sort((a, b) => (a.order || 0) - (b.order || 0)).map((stop, index) => (
+                  <StopCard
+                    key={stop._id} stop={stop} index={index}
+                    onEdit={() => setStopModal({ isOpen: true, stop, mode: 'edit' })}
+                    onDelete={() => handleDeleteStop(stop._id)}
+                    onAddActivity={() => setActivityModal({ isOpen: true, stopId: stop._id, activity: null, mode: 'add' })}
+                    onEditActivity={activity => setActivityModal({ isOpen: true, stopId: stop._id, activity, mode: 'edit' })}
+                    onDeleteActivity={activityId => handleDeleteActivity(stop._id, activityId)}
+                  />
+                ))}
               </div>
             )}
           </div>
         )}
 
         {activeTab === 'budget' && (
-          <div className="text-center py-12">
-            <DollarSign className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-text-primary mb-2">Budget Tracking</h3>
-            <p className="text-text-secondary mb-6">Track expenses for this specific trip</p>
-            <Link 
-              to="/budget" 
-              className="inline-block px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-primary/90 transition"
-            >
-              Go to Budget Page
+          <div className="text-center py-10">
+            <DollarSign className="w-12 h-12 text-text-secondary mx-auto mb-3" />
+            <h3 className="font-bold text-text-primary mb-1">Budget Tracking</h3>
+            <p className="text-text-secondary text-sm mb-4">Track expenses for this trip</p>
+            <Link to="/budget" className="inline-block px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold text-sm hover:scale-105 transition-transform">
+              Open Budget
             </Link>
           </div>
         )}
 
         {activeTab === 'packing' && (
-          <div className="text-center py-12">
-            <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-text-primary mb-2">Packing Checklist</h3>
-            <p className="text-text-secondary mb-6">Create a packing list for this trip</p>
-            <Link 
-              to="/packing-checklist" 
-              className="inline-block px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-primary/90 transition"
-            >
-              Go to Packing Page
+          <div className="text-center py-10">
+            <Package className="w-12 h-12 text-text-secondary mx-auto mb-3" />
+            <h3 className="font-bold text-text-primary mb-1">Packing Checklist</h3>
+            <p className="text-text-secondary text-sm mb-4">Create your packing list</p>
+            <Link to="/packing-checklist" className="inline-block px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold text-sm hover:scale-105 transition-transform">
+              Open Packing
             </Link>
           </div>
         )}
 
         {activeTab === 'notes' && (
-          <div className="text-center py-12">
-            <StickyNote className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-text-primary mb-2">Trip Notes</h3>
-            <p className="text-text-secondary mb-6">Add important notes about this trip</p>
-            <Link 
-              to="/trip-notes" 
-              className="inline-block px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-primary/90 transition"
-            >
-              Go to Notes Page
+          <div className="text-center py-10">
+            <StickyNote className="w-12 h-12 text-text-secondary mx-auto mb-3" />
+            <h3 className="font-bold text-text-primary mb-1">Trip Notes</h3>
+            <p className="text-text-secondary text-sm mb-4">Add important notes</p>
+            <Link to="/trip-notes" className="inline-block px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold text-sm hover:scale-105 transition-transform">
+              Open Notes
             </Link>
           </div>
         )}
@@ -542,14 +430,8 @@ export default function TripDetailPage() {
 function StopCard({ stop, index, onEdit, onDelete, onAddActivity, onEditActivity, onDeleteActivity }) {
   const [isExpanded, setIsExpanded] = useState(true);
   
-  // Group activities by date
   const activitiesByDate = (stop.activities || []).reduce((acc, activity) => {
-    const dateKey = new Date(activity.date).toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric'
-    });
+    const dateKey = new Date(activity.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     if (!acc[dateKey]) acc[dateKey] = [];
     acc[dateKey].push(activity);
     return acc;
@@ -557,166 +439,105 @@ function StopCard({ stop, index, onEdit, onDelete, onAddActivity, onEditActivity
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-6 border border-gray-200"
+      className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5"
     >
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-start gap-4 flex-1">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-            {index + 1}
-          </div>
-          <div className="flex-1">
-            <h3 className="text-2xl font-bold text-text-primary mb-1">{stop.cityName}</h3>
-            <p className="text-text-secondary mb-2">{stop.country}</p>
-            <div className="flex items-center gap-4 text-sm text-text-secondary">
-              <div className="flex items-center gap-1">
-                <Calendar className="w-4 h-4" />
-                <span>
-                  {new Date(stop.arrivalDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  {' - '}
-                  {new Date(stop.departureDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+      <div className="flex items-start gap-3">
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+          {index + 1}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <h3 className="font-bold text-text-primary text-base truncate">{stop.cityName}</h3>
+              <p className="text-text-secondary text-xs">{stop.country}</p>
+              <div className="flex flex-wrap gap-2 mt-1 text-xs text-text-secondary">
+                <span className="flex items-center gap-1">
+                  <Calendar className="w-3 h-3" />
+                  {new Date(stop.arrivalDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – {new Date(stop.departureDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Tag className="w-4 h-4" />
                 <span>{stop.activities?.length || 0} activities</span>
               </div>
             </div>
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <button onClick={() => setIsExpanded(!isExpanded)} className="p-1.5 hover:bg-white/10 rounded-lg transition text-text-secondary">
+                <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </motion.div>
+              </button>
+              <button onClick={onEdit} className="p-1.5 hover:bg-white/10 rounded-lg transition text-text-secondary">
+                <Edit className="w-4 h-4" />
+              </button>
+              <button onClick={onDelete} className="p-1.5 hover:bg-red-500/20 rounded-lg transition text-danger">
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="p-2 hover:bg-white/50 rounded-lg transition"
-            title={isExpanded ? 'Collapse' : 'Expand'}
-          >
-            <motion.div
-              animate={{ rotate: isExpanded ? 180 : 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
+
+          {isExpanded && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 space-y-3">
+              <Button variant="secondary" size="sm" onClick={onAddActivity}>
+                <Plus className="w-3.5 h-3.5 mr-1" /> Add Activity
+              </Button>
+
+              {Object.keys(activitiesByDate).length === 0 ? (
+                <p className="text-text-secondary text-xs italic">No activities yet</p>
+              ) : (
+                <div className="space-y-3">
+                  {Object.entries(activitiesByDate).map(([date, activities]) => (
+                    <div key={date} className="bg-white/5 border border-white/5 rounded-xl p-3">
+                      <h4 className="font-semibold text-text-secondary text-xs mb-2">{date}</h4>
+                      <div className="space-y-2">
+                        {activities.map(activity => (
+                          <ActivityCard key={activity._id} activity={activity} onEdit={() => onEditActivity(activity)} onDelete={() => onDeleteActivity(activity._id)} />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </motion.div>
-          </button>
-          <button
-            onClick={onEdit}
-            className="p-2 hover:bg-white/50 rounded-lg transition"
-            title="Edit stop"
-          >
-            <Edit className="w-5 h-5" />
-          </button>
-          <button
-            onClick={onDelete}
-            className="p-2 hover:bg-red-100 text-danger rounded-lg transition"
-            title="Delete stop"
-          >
-            <Trash2 className="w-5 h-5" />
-          </button>
+          )}
         </div>
       </div>
-
-      {isExpanded && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          exit={{ opacity: 0, height: 0 }}
-          className="space-y-4 mt-4"
-        >
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={onAddActivity}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Activity
-          </Button>
-
-          {Object.keys(activitiesByDate).length === 0 ? (
-            <p className="text-text-secondary text-sm italic">No activities yet</p>
-          ) : (
-            <div className="space-y-4">
-              {Object.entries(activitiesByDate).map(([date, activities]) => (
-                <div key={date} className="bg-white rounded-xl p-4">
-                  <h4 className="font-semibold text-text-primary mb-3">{date}</h4>
-                  <div className="space-y-2">
-                    {activities.map((activity) => (
-                      <ActivityCard
-                        key={activity._id}
-                        activity={activity}
-                        onEdit={() => onEditActivity(activity)}
-                        onDelete={() => onDeleteActivity(activity._id)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </motion.div>
-      )}
     </motion.div>
   );
 }
 
 function ActivityCard({ activity, onEdit, onDelete }) {
   const categoryColors = {
-    'Sightseeing': 'bg-blue-100 text-blue-700',
-    'Food & Drink': 'bg-orange-100 text-orange-700',
-    'Adventure': 'bg-green-100 text-green-700',
-    'Culture': 'bg-purple-100 text-purple-700',
-    'Shopping': 'bg-pink-100 text-pink-700',
-    'Transport': 'bg-gray-100 text-gray-700',
-    'Accommodation': 'bg-indigo-100 text-indigo-700',
-    'Other': 'bg-gray-100 text-gray-700',
+    'Sightseeing':   'bg-blue-500/20 text-blue-300',
+    'Food & Drink':  'bg-orange-500/20 text-orange-300',
+    'Adventure':     'bg-green-500/20 text-green-300',
+    'Culture':       'bg-purple-500/20 text-purple-300',
+    'Shopping':      'bg-pink-500/20 text-pink-300',
+    'Transport':     'bg-gray-500/20 text-gray-300',
+    'Accommodation': 'bg-indigo-500/20 text-indigo-300',
+    'Other':         'bg-slate-500/20 text-slate-300',
   };
 
   return (
-    <div className="flex items-start justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
-      <div className="flex-1">
-        <div className="flex items-center gap-2 mb-1">
-          <h5 className="font-semibold text-text-primary">{activity.name}</h5>
+    <div className="flex items-start justify-between p-3 bg-white/5 rounded-xl hover:bg-white/10 transition">
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1 flex-wrap">
+          <h5 className="font-semibold text-text-primary text-sm">{activity.name}</h5>
           <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${categoryColors[activity.category] || categoryColors['Other']}`}>
             {activity.category}
           </span>
         </div>
-        <div className="flex items-center gap-4 text-sm text-text-secondary">
-          {activity.time && (
-            <div className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              <span>{activity.time}</span>
-            </div>
-          )}
-          {activity.duration && (
-            <span>{activity.duration} min</span>
-          )}
-          {activity.cost > 0 && (
-            <div className="flex items-center gap-1">
-              <DollarSign className="w-3 h-3" />
-              <span>${activity.cost}</span>
-            </div>
-          )}
+        <div className="flex flex-wrap gap-3 text-xs text-text-secondary">
+          {activity.time && <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{activity.time}</span>}
+          {activity.duration && <span>{activity.duration} min</span>}
+          {activity.cost > 0 && <span className="flex items-center gap-1"><DollarSign className="w-3 h-3" />${activity.cost}</span>}
         </div>
-        {activity.notes && (
-          <p className="text-sm text-text-secondary mt-1">{activity.notes}</p>
-        )}
+        {activity.notes && <p className="text-xs text-text-secondary mt-1 line-clamp-1">{activity.notes}</p>}
       </div>
-      <div className="flex items-center gap-1 ml-2">
-        <button
-          onClick={onEdit}
-          className="p-1.5 hover:bg-white rounded transition"
-          title="Edit activity"
-        >
-          <Edit className="w-4 h-4" />
-        </button>
-        <button
-          onClick={onDelete}
-          className="p-1.5 hover:bg-red-100 text-danger rounded transition"
-          title="Delete activity"
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
+      <div className="flex items-center gap-1 ml-2 flex-shrink-0">
+        <button onClick={onEdit} className="p-1.5 hover:bg-white/10 rounded-lg transition text-text-secondary"><Edit className="w-3.5 h-3.5" /></button>
+        <button onClick={onDelete} className="p-1.5 hover:bg-red-500/20 rounded-lg transition text-danger"><Trash2 className="w-3.5 h-3.5" /></button>
       </div>
     </div>
   );
