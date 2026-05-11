@@ -6,6 +6,10 @@ const STORAGE_KEYS = {
   trips: 'traveloop_trips',
   currentUser: 'traveloop_current_user',
   token: 'token',
+  budget: 'traveloop_budget',
+  packing: 'traveloop_packing',
+  notes: 'traveloop_notes',
+  cities: 'traveloop_cities',
 };
 
 // Helper to get data from localStorage
@@ -48,7 +52,7 @@ const initializeMockData = () => {
         description: 'Exploring the beautiful cities of Europe',
         startDate: '2024-06-15',
         endDate: '2024-06-25',
-        coverImage: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&q=80',
+        coverImage: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80',
         stops: [
           {
             _id: 'stop1',
@@ -81,7 +85,7 @@ const initializeMockData = () => {
         description: 'Relaxing beach holiday in Goa',
         startDate: '2024-07-01',
         endDate: '2024-07-07',
-        coverImage: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=800&q=80',
+        coverImage: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=800&q=80',
         stops: [],
         shareToken: null,
         createdAt: new Date().toISOString(),
@@ -93,10 +97,87 @@ const initializeMockData = () => {
         description: 'Adventure in the mountains',
         startDate: '2024-08-10',
         endDate: '2024-08-20',
-        coverImage: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
+        coverImage: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=800&q=80',
         stops: [],
         shareToken: null,
         createdAt: new Date().toISOString(),
+      },
+    ]);
+  }
+
+  if (!getFromStorage(STORAGE_KEYS.budget)) {
+    saveToStorage(STORAGE_KEYS.budget, []);
+  }
+
+  if (!getFromStorage(STORAGE_KEYS.packing)) {
+    saveToStorage(STORAGE_KEYS.packing, []);
+  }
+
+  if (!getFromStorage(STORAGE_KEYS.notes)) {
+    saveToStorage(STORAGE_KEYS.notes, []);
+  }
+
+  if (!getFromStorage(STORAGE_KEYS.cities)) {
+    saveToStorage(STORAGE_KEYS.cities, [
+      {
+        _id: 'city1',
+        name: 'Paris',
+        country: 'France',
+        description: 'The City of Light, known for its art, fashion, and culture',
+        image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80',
+        rating: 4.8,
+        visitors: '30M+',
+        highlights: ['Eiffel Tower', 'Louvre Museum', 'Notre-Dame'],
+      },
+      {
+        _id: 'city2',
+        name: 'Tokyo',
+        country: 'Japan',
+        description: 'A vibrant metropolis blending tradition and modernity',
+        image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=800&q=80',
+        rating: 4.9,
+        visitors: '15M+',
+        highlights: ['Shibuya Crossing', 'Mount Fuji', 'Senso-ji Temple'],
+      },
+      {
+        _id: 'city3',
+        name: 'New York',
+        country: 'USA',
+        description: 'The city that never sleeps, a global hub of culture and commerce',
+        image: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=800&q=80',
+        rating: 4.7,
+        visitors: '60M+',
+        highlights: ['Statue of Liberty', 'Central Park', 'Times Square'],
+      },
+      {
+        _id: 'city4',
+        name: 'Dubai',
+        country: 'UAE',
+        description: 'A futuristic city with stunning architecture and luxury',
+        image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80',
+        rating: 4.6,
+        visitors: '16M+',
+        highlights: ['Burj Khalifa', 'Palm Jumeirah', 'Dubai Mall'],
+      },
+      {
+        _id: 'city5',
+        name: 'London',
+        country: 'UK',
+        description: 'Historic capital with royal palaces and world-class museums',
+        image: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80',
+        rating: 4.7,
+        visitors: '19M+',
+        highlights: ['Big Ben', 'Tower Bridge', 'British Museum'],
+      },
+      {
+        _id: 'city6',
+        name: 'Bali',
+        country: 'Indonesia',
+        description: 'Tropical paradise with beautiful beaches and temples',
+        image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=800&q=80',
+        rating: 4.8,
+        visitors: '6M+',
+        highlights: ['Ubud', 'Tanah Lot', 'Seminyak Beach'],
       },
     ]);
   }
@@ -286,6 +367,120 @@ export const mockApi = {
         data: stats,
       },
     };
+  },
+
+  // Budget
+  getBudget: async () => {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const budget = getFromStorage(STORAGE_KEYS.budget) || [];
+    return { data: { data: budget } };
+  },
+
+  createBudget: async (budgetData) => {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const budget = getFromStorage(STORAGE_KEYS.budget) || [];
+    const newItem = {
+      _id: 'budget' + Date.now(),
+      ...budgetData,
+      amount: parseFloat(budgetData.amount),
+      createdAt: new Date().toISOString(),
+    };
+    budget.push(newItem);
+    saveToStorage(STORAGE_KEYS.budget, budget);
+    return { data: { data: newItem } };
+  },
+
+  deleteBudget: async (id) => {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const budget = getFromStorage(STORAGE_KEYS.budget) || [];
+    const filtered = budget.filter((b) => b._id !== id);
+    saveToStorage(STORAGE_KEYS.budget, filtered);
+    return { data: { success: true } };
+  },
+
+  // Packing
+  getPacking: async () => {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const packing = getFromStorage(STORAGE_KEYS.packing) || [];
+    return { data: { data: packing } };
+  },
+
+  createPacking: async (packingData) => {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const packing = getFromStorage(STORAGE_KEYS.packing) || [];
+    const newItem = {
+      _id: 'pack' + Date.now(),
+      ...packingData,
+      createdAt: new Date().toISOString(),
+    };
+    packing.push(newItem);
+    saveToStorage(STORAGE_KEYS.packing, packing);
+    return { data: { data: newItem } };
+  },
+
+  updatePacking: async (id, updates) => {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const packing = getFromStorage(STORAGE_KEYS.packing) || [];
+    const index = packing.findIndex((p) => p._id === id);
+    if (index !== -1) {
+      packing[index] = { ...packing[index], ...updates };
+      saveToStorage(STORAGE_KEYS.packing, packing);
+    }
+    return { data: { data: packing[index] } };
+  },
+
+  deletePacking: async (id) => {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const packing = getFromStorage(STORAGE_KEYS.packing) || [];
+    const filtered = packing.filter((p) => p._id !== id);
+    saveToStorage(STORAGE_KEYS.packing, filtered);
+    return { data: { success: true } };
+  },
+
+  // Notes
+  getNotes: async () => {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const notes = getFromStorage(STORAGE_KEYS.notes) || [];
+    return { data: { data: notes } };
+  },
+
+  createNote: async (noteData) => {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const notes = getFromStorage(STORAGE_KEYS.notes) || [];
+    const newNote = {
+      _id: 'note' + Date.now(),
+      ...noteData,
+      createdAt: new Date().toISOString(),
+    };
+    notes.push(newNote);
+    saveToStorage(STORAGE_KEYS.notes, notes);
+    return { data: { data: newNote } };
+  },
+
+  updateNote: async (id, updates) => {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const notes = getFromStorage(STORAGE_KEYS.notes) || [];
+    const index = notes.findIndex((n) => n._id === id);
+    if (index !== -1) {
+      notes[index] = { ...notes[index], ...updates };
+      saveToStorage(STORAGE_KEYS.notes, notes);
+    }
+    return { data: { data: notes[index] } };
+  },
+
+  deleteNote: async (id) => {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const notes = getFromStorage(STORAGE_KEYS.notes) || [];
+    const filtered = notes.filter((n) => n._id !== id);
+    saveToStorage(STORAGE_KEYS.notes, filtered);
+    return { data: { success: true } };
+  },
+
+  // Cities
+  getCities: async () => {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const cities = getFromStorage(STORAGE_KEYS.cities) || [];
+    return { data: { data: cities } };
   },
 };
 

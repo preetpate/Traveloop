@@ -41,6 +41,10 @@ const apiWrapper = {
       if (url === '/api/auth/me') return mockApi.getMe();
       if (url === '/api/trips') return mockApi.getTrips();
       if (url === '/api/trips/stats') return mockApi.getTripStats();
+      if (url === '/api/budget') return mockApi.getBudget();
+      if (url === '/api/packing') return mockApi.getPacking();
+      if (url === '/api/notes') return mockApi.getNotes();
+      if (url === '/api/discovery/cities') return mockApi.getCities();
       if (url.startsWith('/api/trips/')) {
         const tripId = url.split('/')[3];
         return mockApi.getTripById(tripId);
@@ -54,6 +58,9 @@ const apiWrapper = {
       if (url === '/api/auth/login') return mockApi.login(data.email, data.password);
       if (url === '/api/auth/signup') return mockApi.register(data.name, data.email, data.password);
       if (url === '/api/trips') return mockApi.createTrip(data);
+      if (url === '/api/budget') return mockApi.createBudget(data);
+      if (url === '/api/packing') return mockApi.createPacking(data);
+      if (url === '/api/notes') return mockApi.createNote(data);
     }
     return api.post(url, data, config);
   },
@@ -64,6 +71,14 @@ const apiWrapper = {
         const tripId = url.split('/')[3];
         return mockApi.updateTrip(tripId, data);
       }
+      if (url.startsWith('/api/packing/')) {
+        const id = url.split('/')[3];
+        return mockApi.updatePacking(id, data);
+      }
+      if (url.startsWith('/api/notes/')) {
+        const id = url.split('/')[3];
+        return mockApi.updateNote(id, data);
+      }
     }
     return api.put(url, data, config);
   },
@@ -73,6 +88,18 @@ const apiWrapper = {
       if (url.startsWith('/api/trips/')) {
         const tripId = url.split('/')[3];
         return mockApi.deleteTrip(tripId);
+      }
+      if (url.startsWith('/api/budget/')) {
+        const id = url.split('/')[3];
+        return mockApi.deleteBudget(id);
+      }
+      if (url.startsWith('/api/packing/')) {
+        const id = url.split('/')[3];
+        return mockApi.deletePacking(id);
+      }
+      if (url.startsWith('/api/notes/')) {
+        const id = url.split('/')[3];
+        return mockApi.deleteNote(id);
       }
     }
     return api.delete(url, config);
