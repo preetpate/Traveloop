@@ -19,7 +19,7 @@ export default function ProgressBar({
   return (
     <div className={['flex items-center gap-3', className].join(' ')}>
       <div
-        className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden"
+        className="flex-1 h-2 bg-card/70 rounded-full overflow-hidden"
         role="progressbar"
         aria-valuenow={clamped}
         aria-valuemin={0}

@@ -46,7 +46,7 @@ export default function Modal({ isOpen, onClose, children, title, size = 'md' })
         >
           {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={onClose}
             aria-hidden="true"
           />
@@ -54,7 +54,7 @@ export default function Modal({ isOpen, onClose, children, title, size = 'md' })
           {/* Panel */}
           <motion.div
             className={[
-              'relative z-10 w-full bg-white border border-border rounded-2xl shadow-large',
+              'relative z-10 w-full bg-card/90 backdrop-blur-lg border border-border rounded-2xl shadow-large',
               panelSizeClass,
             ].join(' ')}
             initial={{ opacity: 0, scale: 0.95 }}
@@ -75,7 +75,7 @@ export default function Modal({ isOpen, onClose, children, title, size = 'md' })
                 </h2>
                 <button
                   onClick={onClose}
-                  className="text-text-secondary hover:text-text-primary transition-colors duration-150 rounded-lg p-1 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="text-text-secondary hover:text-text-primary transition-colors duration-150 rounded-lg p-1 hover:bg-card/50 focus:outline-none focus:ring-2 focus:ring-primary/50"
                   aria-label="Close modal"
                 >
                   <X className="h-5 w-5" aria-hidden="true" />

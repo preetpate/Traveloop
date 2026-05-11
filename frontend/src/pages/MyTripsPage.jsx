@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom';
 import { Plus, MapPin, Calendar, Trash2, Share2, Edit } from 'lucide-react';
 import { motion } from 'framer-motion';
 import api from '../services/api';
+import ConfirmDialog from '../components/ui/ConfirmDialog';
 
 export default function MyTripsPage() {
   const [trips, setTrips] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [deleteDialog, setDeleteDialog] = useState({ isOpen: false, tripId: null, tripTitle: '' });
 
   useEffect(() => {
     fetchTrips();
@@ -23,12 +25,19 @@ export default function MyTripsPage() {
     }
   };
 
-  const handleDelete = async (tripId) => {
-    if (!window.confirm('Are you sure you want to delete this trip?')) return;
+  const openDeleteDialog = (tripId, tripTitle) => {
+    setDeleteDialog({ isOpen: true, tripId, tripTitle });
+  };
 
+  const closeDeleteDialog = () => {
+    setDeleteDialog({ isOpen: false, tripId: null, tripTitle: '' });
+  };
+
+  const handleDelete = async () => {
     try {
-      await api.delete(`/api/trips/${tripId}`);
-      setTrips(trips.filter((trip) => trip._id !== tripId));
+      await api.delete(`/api/trips/${deleteDialog.tripId}`);
+      setTrips(trips.filter((trip) => trip._id !== deleteDialog.tripId));
+      closeDeleteDialog();
     } catch (err) {
       console.error('Failed to delete trip:', err);
       alert('Failed to delete trip');
@@ -195,7 +204,7 @@ export default function MyTripsPage() {
                   <button
                     onClick={(e) => {
                       e.preventDefault();
-                      handleDelete(trip._id);
+                      openDeleteDialog(trip._id, trip.title);
                     }}
                     className="px-4 py-2.5 bg-red-50 text-danger rounded-xl hover:bg-red-100 transition"
                   >
@@ -207,6 +216,18 @@ export default function MyTripsPage() {
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        onClose={closeDeleteDialog}
+        onConfirm={handleDelete}
+        title="Delete Trip"
+        message={`Are you sure you want to delete "${deleteDialog.tripTitle}"? This action cannot be undone and will remove all associated stops, activities, budget, packing list, and notes.`}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        variant="danger"
+      />
     </div>
   );
 }

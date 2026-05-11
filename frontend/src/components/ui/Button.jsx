@@ -1,12 +1,12 @@
 const variantClasses = {
   primary:
-    'bg-primary text-white hover:bg-blue-600 focus:ring-primary/50 disabled:bg-primary/40 shadow-sm',
+    'bg-primary text-white hover:bg-blue-600 focus:ring-primary/50 disabled:bg-primary/40 shadow-medium',
   secondary:
-    'bg-white text-primary border border-border hover:bg-gray-50 focus:ring-primary/50 disabled:opacity-40 shadow-sm',
+    'bg-card/50 text-text-primary border border-border hover:bg-card/70 focus:ring-primary/50 disabled:opacity-40 shadow-soft backdrop-blur-md',
   danger:
-    'bg-danger text-white hover:bg-red-600 focus:ring-danger/50 disabled:bg-danger/40 shadow-sm',
+    'bg-danger text-white hover:bg-red-600 focus:ring-danger/50 disabled:bg-danger/40 shadow-medium',
   ghost:
-    'bg-transparent text-text-secondary hover:text-text-primary hover:bg-gray-100 focus:ring-primary/20 disabled:opacity-40',
+    'bg-transparent text-text-secondary hover:text-text-primary hover:bg-card/30 focus:ring-primary/20 disabled:opacity-40 backdrop-blur-sm',
 };
 
 const sizeClasses = {

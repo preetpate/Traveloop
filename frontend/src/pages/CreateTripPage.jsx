@@ -47,7 +47,7 @@ export default function CreateTripPage() {
     try {
       const res = await api.post('/api/trips', formData);
       const tripId = res.data.data._id;
-      navigate(`/my-trips`);
+      navigate(`/trip/${tripId}`);
     } catch (err) {
       setErrors({ submit: err.response?.data?.message || 'Failed to create trip' });
     } finally {

@@ -17,9 +17,9 @@ export default function Card({ className = '', children, onClick }) {
           : undefined
       }
       className={[
-        'bg-white/80 backdrop-blur-md border border-border rounded-2xl shadow-medium',
+        'bg-card/50 backdrop-blur-md border border-border rounded-2xl shadow-medium',
         isClickable
-          ? 'cursor-pointer transition-transform duration-150 ease-in-out hover:scale-[1.01] hover:shadow-large focus:outline-none focus:ring-2 focus:ring-primary/50'
+          ? 'cursor-pointer transition-all duration-150 ease-in-out hover:scale-[1.01] hover:shadow-large hover:bg-card/60 focus:outline-none focus:ring-2 focus:ring-primary/50'
           : '',
         className,
       ]

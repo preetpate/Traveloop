@@ -34,7 +34,7 @@ export default function Toast({ toast, onRemove }) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 10, scale: 0.95 }}
       transition={{ duration: 0.2 }}
-      className="flex items-start gap-3 w-80 bg-white border border-border rounded-xl shadow-large px-4 py-3"
+      className="flex items-start gap-3 w-80 bg-card/90 backdrop-blur-lg border border-border rounded-xl shadow-large px-4 py-3"
       role="alert"
       aria-live="polite"
     >
